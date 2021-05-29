@@ -3,11 +3,29 @@ import numpy as np
 
 
 def is_power_of2(N):
+    """A function that checks if an input number N
+    is a power of 2
+
+    Args:
+        N (int): The number that may or may not be
+        2 raised to the power of something.
+
+    Returns:
+        bool: either True or False.
+    """    #
     return (N & (N - 1) == 0) and N != 0
 
 
 
 def cround(x):
+    """A function to floor numbers. Works for complex numbers.
+
+    Args:
+        x (complex): The complex number to be floored.
+
+    Returns:
+        complex: The floored complex number.
+    """    
     decimal_places = 3
     rounding_factor = 10 ** decimal_places
 
@@ -18,6 +36,14 @@ def cround(x):
 
 
 def csum(li):
+    """A function to sum up complex numbers.
+
+    Args:
+        li (list): The input list of complex numbers.
+
+    Returns:
+        complex: The sum of complex numbers.
+    """    
     ans = 0
     for item in li:
         ans += item
@@ -26,6 +52,17 @@ def csum(li):
 
 
 def w(n, k, N):
+    """Function that computes for the twiddle factor
+    used in FFT and IFFT.
+
+    Args:
+        n (int): Discrete index of time-domain signal
+        k (int): Discrete index of freq-domain signal
+        N (int): Length of signal
+
+    Returns:
+        complex: The twiddle factor
+    """    
     return cmath.exp(-2 * cmath.pi * 1j * n * k / N)
 
 
@@ -67,14 +104,27 @@ def fft(signal):
 
 
 def ifft(signal):
+    """A split-radix implementation of the inverse
+    fast fourier transform (IFFT). 
+
+    Args:
+        signal (list): The list describing the frequency
+        components of the signal.
+
+    Returns:
+        list: The list describing the freq-domain signal
+        in the time domain.
+    """    
 
     signal_copy = signal.copy()
 
+    # append 0s to the signal if it is not a power of 2
     while not is_power_of2(len(signal_copy)):
         signal_copy.append(0)
 
     N = len(signal_copy)
 
+    # base cases
     if N == 2:
         return [cround(item) for item in [(signal_copy[0] + signal_copy[1]) / 2, (signal_copy[0] - signal_copy[1]) / 2]]
     if N == 1:
@@ -84,16 +134,20 @@ def ifft(signal):
 
     for n in range(int(N / 2)):
 
+        # split the signal computations into even and two odd subsequences
         x_even = csum([signal_copy[2 * k] * w(-n, k, N / 2) for k in range(int(N / 2))]) / N
         x_odd1 = csum([signal_copy[4 * k + 1] * w(-n, k, N / 4) for k in range(int(N / 4))]) / N
         x_odd3 = csum([signal_copy[4 * k + 3] * w(-n, k, N / 4) for k in range(int(N / 4))]) / N
 
+        # compute for the twiddle factors used in combining the signals
         w1n = w(-n, 1, N)
         w3n = w(-3 * n, 1, N)
 
+        # merge the separated signals to compute for two time-domain answers
         x[n] = x_even + (w1n * x_odd1 + w3n * x_odd3)
         x[n + int(N / 2)] = x_even - (w1n * x_odd1 + w3n * x_odd3)
 
+    # before returning the IFFT, round down each answer
     return [cround(item) for item in x]
 
 
