@@ -1,2 +1,2 @@
-# fast-fourier-transform
+# python-fast-fourier-transform
 A machine project for CoE 164.
