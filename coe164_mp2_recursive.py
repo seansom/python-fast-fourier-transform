@@ -15,11 +15,15 @@ def is_power_of2(N):
 
 
 
-def cround(x):
+def cround(x, return_real_only= False):
     decimal_places = 3
     rounding_factor = 10 ** decimal_places
 
     x_real = math.floor(x.real * rounding_factor)/rounding_factor if x.real > 0 else math.ceil(x.real * rounding_factor)/rounding_factor
+
+    if return_real_only == True:
+        return x_real
+
     x_imag = math.floor(x.imag * rounding_factor)/rounding_factor if x.imag > 0 else math.ceil(x.imag * rounding_factor)/rounding_factor
     return x_real + x_imag * 1j
 
@@ -76,34 +80,42 @@ def ifft(signal):
 
     N = len(signal_copy)
 
+    # base cases
     if N == 2:
         return [cround(item) for item in [(signal_copy[0] + signal_copy[1]) / 2, (signal_copy[0] - signal_copy[1]) / 2]]
     if N == 1:
         return [signal_copy[0]]
 
+    # split X into quadrants
     X0 = signal[:N // 4]
     X1 = signal[N // 4:N // 2]
     X2 = signal[N // 2:N * 3 // 4]
     X3 = signal[N * 3 // 4:N]
 
+    # compute for sum_odd and diff_odd used
     sum_odd = [(X0[index] - X2[index]) / 2 for index, _ in enumerate(X0)]
     diff_odd = [(X3[index] - X1[index]) / 2j for index, _ in enumerate(X3)]
 
+    # compute for the fourier-transformed even elements of x
     x_even = []
     x_even.append([X0[index] - sum_odd[index] for index, _ in enumerate(X0)]) 
     x_even.append([X1[index] + 1j * diff_odd[index] for index, _ in enumerate(X1)])
     x_even = flatten_list(x_even)
 
+    # compute for the twiddle factors used to compute for sum and diff odd
     w1k = [w(1, k, N) for k in range(N)]
     w3k = [w(1, 3 * k, N) for k in range(N)]
 
+    # compute for the fourier-transformed odd1 and odd3 elements of x
     x_odd1 = [(sum_odd[index] + diff_odd[index]) / (2 *  w1k[index]) for index in range(N // 4)]
     x_odd3 = [(sum_odd[index] - diff_odd[index]) / (2 *  w3k[index]) for index in range(N // 4)]
 
+    # compute for the time-domain elements of x by recursively calling ifft()
     x_even = ifft(x_even)
     x_odd1 = ifft(x_odd1)
     x_odd3 = ifft(x_odd3)
 
+    # reorder the subsignals into a single list of time-domain elements of x 
     x = [None] * N
 
     for index in range(N // 2):
@@ -113,7 +125,8 @@ def ifft(signal):
         x[4 * index + 1] = x_odd1[index]
         x[4 * index + 3] = x_odd3[index]
 
-    return [cround(item) for item in x]
+    # round down each element of x before returning
+    return [cround(item, return_real_only= True) for item in x]
 
 
 
