@@ -16,12 +16,13 @@ import mpmath as mp
 def memoize(func):
     memo = {}
 
-    def wrapper(n):
+    def wrapper(*args):
+        key = args
 
-        if n not in memo:
-            memo[n] = func(n)
+        if args not in memo:
+            memo[args] = func(*args)
 
-        return memo[n]
+        return memo[args]
 
     return wrapper
 
@@ -54,7 +55,6 @@ def cround(x, return_real_only= False):
 
     else:
         return complex(x_real, x_imag)
-
 
 
 @memoize
