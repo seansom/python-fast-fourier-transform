@@ -85,11 +85,11 @@ def fft(signal):
 
     for k in range(int(N / 4)):
 
-        X_even = csum([signal_copy[2 * n] * w(n, k, N / 2) for n in range(int(N / 2))])
-        X_odd1 = csum([signal_copy[4 * n + 1] * w(n, k, N / 4) for n in range(int(N / 4))])
-        X_odd3 = csum([signal_copy[4 * n + 3] * w(n, k, N / 4) for n in range(int(N / 4))])
+        X_even = csum([signal_copy[2 * n] * w(n, k, N / 2) for n in range(N // 2)])
+        X_odd1 = csum([signal_copy[4 * n + 1] * w(n, k, N / 4) for n in range(N // 4)])
+        X_odd3 = csum([signal_copy[4 * n + 3] * w(n, k, N / 4) for n in range(N // 4)])
 
-        X_even2 = csum([signal_copy[2 * n] * w(n, k + N / 4, N / 2) for n in range(int(N / 2))])
+        X_even2 = csum([signal_copy[2 * n] * w(n, k + N / 4, N / 2) for n in range(N // 2)])
 
         w1k = w(1, k, N)
         w3k = w(1, 3 * k, N)
@@ -135,9 +135,9 @@ def ifft(signal):
     for n in range(int(N / 2)):
 
         # split the signal computations into even and two odd subsequences
-        x_even = csum([signal_copy[2 * k] * w(-n, k, N / 2) for k in range(int(N / 2))]) / N
-        x_odd1 = csum([signal_copy[4 * k + 1] * w(-n, k, N / 4) for k in range(int(N / 4))]) / N
-        x_odd3 = csum([signal_copy[4 * k + 3] * w(-n, k, N / 4) for k in range(int(N / 4))]) / N
+        x_even = csum([signal_copy[2 * k] * w(-n, k, N / 2) for k in range(N // 2)]) / N
+        x_odd1 = csum([signal_copy[4 * k + 1] * w(-n, k, N / 4) for k in range(N // 4)]) / N
+        x_odd3 = csum([signal_copy[4 * k + 3] * w(-n, k, N / 4) for k in range(N // 4)]) / N
 
         # compute for the twiddle factors used in combining the signals
         w1n = w(-n, 1, N)
@@ -164,4 +164,7 @@ test4 = [(28+0j), (-4+9.656j), (-4+3.999j), (-3.999+1.656j), (-4+0j), (-3.999-1.
 test5 = [12, 5, 23, 6, 8, 17, 8, 2]
 test6 = [(81+0j), (-7.313-9.343j), (-11-14j), (15.313+20.656j), (21+0j), (15.313-20.656j), (-11+13.999j), (-7.313+9.343j)]
 
-print(ifft(test6))
+test7 = [12, 35, 2, 35, 22, 16, 12, 74, 27, 34, 56, 12, 8, 12, 45, 7]
+test8 = [(409+0j), (-83.554-3.449j), (62.033-5.949j), (-42.96+23.026j), (-46+31j), (42.66-128.009j), (-44.033-3.949j), (23.856-98.485j), (-41+0j), (23.856+98.485j), (-44.033+3.949j), (42.66+128.009j), (-46-31j), (-42.96-23.026j), (62.033+5.949j), (-83.554+3.449j)]
+
+print(fft(test6))
