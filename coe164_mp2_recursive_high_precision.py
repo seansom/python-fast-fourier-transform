@@ -17,7 +17,6 @@ def memoize(func):
     memo = {}
 
     def wrapper(*args):
-        key = args
 
         if args not in memo:
             memo[args] = func(*args)
