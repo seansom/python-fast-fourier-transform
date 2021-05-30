@@ -12,24 +12,20 @@ def is_power_of2(N):
 
     Returns:
         bool: either True or False.
-    """    #
+    """
     return (N & (N - 1) == 0) and N != 0
 
 
 
-def cround(x):
-    """A function to floor numbers. Works for complex numbers.
-
-    Args:
-        x (complex): The complex number to be floored.
-
-    Returns:
-        complex: The floored complex number.
-    """    
+def cround(x, return_real_only= False):
     decimal_places = 3
     rounding_factor = 10 ** decimal_places
 
     x_real = math.floor(x.real * rounding_factor)/rounding_factor if x.real > 0 else math.ceil(x.real * rounding_factor)/rounding_factor
+
+    if return_real_only == True:
+        return x_real
+
     x_imag = math.floor(x.imag * rounding_factor)/rounding_factor if x.imag > 0 else math.ceil(x.imag * rounding_factor)/rounding_factor
     return x_real + x_imag * 1j
 
@@ -148,7 +144,7 @@ def ifft(signal):
         x[n + int(N / 2)] = x_even - (w1n * x_odd1 + w3n * x_odd3)
 
     # before returning the IFFT, round down each answer
-    return [cround(item) for item in x]
+    return [cround(item, return_real_only= True) for item in x]
 
 
 
@@ -167,4 +163,8 @@ test6 = [(81+0j), (-7.313-9.343j), (-11-14j), (15.313+20.656j), (21+0j), (15.313
 test7 = [12, 35, 2, 35, 22, 16, 12, 74, 27, 34, 56, 12, 8, 12, 45, 7]
 test8 = [(409+0j), (-83.554-3.449j), (62.033-5.949j), (-42.96+23.026j), (-46+31j), (42.66-128.009j), (-44.033-3.949j), (23.856-98.485j), (-41+0j), (23.856+98.485j), (-44.033+3.949j), (42.66+128.009j), (-46-31j), (-42.96-23.026j), (62.033+5.949j), (-83.554+3.449j)]
 
-print(fft(test6))
+
+print(ifft(test2))
+print(ifft(test4))
+print(ifft(test6))
+print(ifft(test8))
