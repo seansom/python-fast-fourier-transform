@@ -87,19 +87,19 @@ def ifft(signal):
         return [signal_copy[0]]
 
     # split X into quadrants
-    X0 = signal[:N // 4]
-    X1 = signal[N // 4:N // 2]
-    X2 = signal[N // 2:N * 3 // 4]
-    X3 = signal[N * 3 // 4:N]
+    X0 = signal_copy[:N // 4]
+    X1 = signal_copy[N // 4:N // 2]
+    X2 = signal_copy[N // 2:N * 3 // 4]
+    X3 = signal_copy[N * 3 // 4:N]
 
     # compute for sum_odd and diff_odd used
-    sum_odd = [(X0[index] - X2[index]) / 2 for index, _ in enumerate(X0)]
-    diff_odd = [(X3[index] - X1[index]) / 2j for index, _ in enumerate(X3)]
+    sum_odd = [(X0[index] - X2[index]) / 2 for index in range(N // 4)]
+    diff_odd = [(X3[index] - X1[index]) / 2j for index in range(N // 4)]
 
     # compute for the fourier-transformed even elements of x
     x_even = []
-    x_even.append([X0[index] - sum_odd[index] for index, _ in enumerate(X0)]) 
-    x_even.append([X1[index] + 1j * diff_odd[index] for index, _ in enumerate(X1)])
+    x_even.append([X0[index] - sum_odd[index] for index in range(N // 4)]) 
+    x_even.append([X1[index] + 1j * diff_odd[index] for index in range(N // 4)])
     x_even = flatten_list(x_even)
 
     # compute for the twiddle factors used to compute for sum and diff odd
@@ -133,8 +133,8 @@ def ifft(signal):
 base1 = [0, 4]
 base2 = [4, -4]
 
-test1 = [0, 2, 4, 6]
-test2 = [(12+0j), (-4+4j), (-4+0j), (-4-4j)]
+test1 = [0, 2, 4]
+test2 = [(12+0j), (-4+4j), (-4+0j), 0]
 
 test3 = [0, 1, 2, 3, 4, 5, 6, 7]
 test4 = [(28+0j), (-4+9.656j), (-4+3.999j), (-3.999+1.656j), (-4+0j), (-3.999-1.656j), (-4-4j), (-3.999-9.656j)]
