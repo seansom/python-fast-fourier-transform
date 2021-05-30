@@ -104,7 +104,7 @@ def ifft_helper(signal):
     x_odd1 = [(sum_odd[index] + diff_odd[index]) / (2 *  w1k[index]) for index in range(N // 4)]
     x_odd3 = [(sum_odd[index] - diff_odd[index]) / (2 *  w3k[index]) for index in range(N // 4)]
 
-    # compute for the time-domain elements of x by recursively calling ifft()
+    # compute for the time-domain elements of x by recursively calling ifft_helper()
     x_even = ifft_helper(x_even)
     x_odd1 = ifft_helper(x_odd1)
     x_odd3 = ifft_helper(x_odd3)
@@ -139,7 +139,7 @@ def main():
 
     signals_num = int(lines.pop(0)[0])
 
-    answers = []
+    answers = [signals_num]
 
     for index in range(signals_num):
 
@@ -166,7 +166,6 @@ def main():
 
         answers.append(' '.join(ans))
 
-    print(signals_num)
     for ans in answers:
         print(ans)
 
@@ -187,7 +186,7 @@ def main():
 # test7 = [12, 35, 2, 35, 22, 16, 12, 74, 27, 34, 56, 12, 8, 12, 45, 7]
 # test8 = [(409+0j), (-83.554-3.449j), (62.033-5.949j), (-42.96+23.026j), (-46+31j), (42.66-128.009j), (-44.033-3.949j), (23.856-98.485j), (-41+0j), (23.856+98.485j), (-44.033+3.949j), (42.66+128.009j), (-46-31j), (-42.96-23.026j), (62.033+5.949j), (-83.554+3.449j)]
 
-# test9 = [1.234567, 7.654321, 1.001000, 0]
+# test9 = [1.234567, 7.654321, 1.001001, 0.000001]
 # test10 = [(9.889888+0j), (0.23356700000000008-7.654321j), (-5.418754000000001+0j), (0.23356700000000008+7.654321j)]
 
 # test11 = [1, 2, 3, 4, 5, 0, 0, 0]
@@ -197,7 +196,8 @@ def main():
 # print(ifft(npfft(test3)))
 # print(ifft(npfft(test5)))
 # print(ifft(npfft(test7)))
-# print(ifft(npfft(test9)))
+# print(ifft(npfft(ifft(npfft(test9)))))
+# print(ifft(npfft(test11)))
 
 
 if __name__ == '__main__':
