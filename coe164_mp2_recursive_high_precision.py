@@ -13,6 +13,19 @@ import mpmath as mp
 #     return (np.fft.ifft(li)).tolist()
 
 
+def memoize(func):
+    memo = {}
+
+    def wrapper(n):
+
+        if n not in memo:
+            memo[n] = func(n)
+
+        return memo[n]
+
+    return wrapper
+
+
 
 def flatten_list(li):
     if isinstance(li[0], list):
@@ -22,6 +35,7 @@ def flatten_list(li):
 
 
 
+@memoize
 def is_power_of2(N):
     return (N & (N - 1) == 0) and N != 0
 
@@ -43,6 +57,7 @@ def cround(x, return_real_only= False):
 
 
 
+@memoize
 def w(n, k, N):
     return mp.exp(mp.mpc(-2 * mp.pi * (1j) * n * k) / N)
 
