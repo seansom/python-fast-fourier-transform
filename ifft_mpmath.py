@@ -166,6 +166,7 @@ def main():
 
         answers.append(' '.join(ans))
 
+
     for ans in answers:
         print(ans)
 
