@@ -14,30 +14,52 @@ class hpc:
     standard library Decimal class.
     """    
 
-    def __init__(self, real, imag= 0):
+    def __init__(self, real, imag= None):
 
-        if isinstance(real, hpc):
+        if isinstance(real, hpc) and imag is None:
             self.real = real.real
             self.imag = real.imag
 
         # i.e. hpc(1 + 2j)
-        elif isinstance(real, complex):
+        elif isinstance(real, complex) and imag is None:
             self.real = decimal.Decimal(real.real)
             self.imag = decimal.Decimal(real.imag)
 
-        # i.e. hpc('1 + 2j')
-        elif isinstance(real, str):
+        # i.e. hpc('1 + 2j') or hpc('-2.0) or hpc('3.2j')
+        elif isinstance(real, str) and imag is None:
             real = real.replace(' ', '')
-            hpc_regex = re.compile(r'([\+-]?[\d]+.?[\d]*)([\+-][\d]+.?[\d]*)j')
-            real, imag = hpc_regex.findall(real)[0]
 
-            self.real = decimal.Decimal(real)
-            self.imag = decimal.Decimal(imag)
+            real_imag_regex = re.compile(r'^([\+-]?[\d]+\.?[\d]*)([\+-][\d]+\.?[\d]*)j$')
+            real_only_regex = re.compile(r'(^[\+-]?[\d]+\.?[\d]*)$')
+            imag_only_regex = re.compile(r'(^[\+-]?[\d]+\.?[\d]*)j$')
+
+            if match := real_imag_regex.findall(real):
+                real, imag = match[0]
+                self.real = decimal.Decimal(real)
+                self.imag = decimal.Decimal(imag)
+
+            elif match:= real_only_regex.findall(real):
+                self.real = decimal.Decimal(match[0])
+                self.imag = decimal.Decimal(0)
+
+            elif match:= imag_only_regex.findall(real):
+                self.real = decimal.Decimal(0)
+                self.imag = decimal.Decimal(match[0])
+
+            else:
+                raise ValueError('Malformed string in hpc constructor.')
+
 
         # i.e. hpc(1, 2) or hpc('1', '2')
         else:
-            self.real = decimal.Decimal(real)
-            self.imag = decimal.Decimal(imag)
+            if imag is None:
+                imag = 0
+            
+            try:
+                self.real = decimal.Decimal(real)
+                self.imag = decimal.Decimal(imag)
+            except:
+                raise ValueError('Invalid hpc constructor arguments.')
 
 
 
@@ -484,7 +506,7 @@ def main():
         
         # convert freq elements string into a complex list
         signal = signal.replace(' ', '')
-        signal_regex = re.compile(r'[\+-][\d]+.[\d]+[\+-][\d]+.[\d]+j')
+        signal_regex = re.compile(r'[\+-][\d]+\.[\d]+[\+-][\d]+\.[\d]+j')
 
         signal = [hpc(item) for item in signal_regex.findall(signal)]
 
