@@ -25,7 +25,7 @@ class hpc:
             self.real = decimal.Decimal(real.real)
             self.imag = decimal.Decimal(real.imag)
 
-        # i.e. hpc('1 + 2j') or hpc('-2.0) or hpc('3.2j')
+        # i.e. hpc('1 + 2j') or hpc('-2.0') or hpc('3.2j')
         elif isinstance(real, str) and imag is None:
             real = real.replace(' ', '')
 
@@ -50,7 +50,7 @@ class hpc:
                 raise ValueError('Malformed string in hpc constructor.')
 
 
-        # i.e. hpc(1, 2) or hpc('1', '2')
+        # i.e. hpc(1, 2) or hpc('1', '2') or hpc('1.', -2.32)
         else:
             if imag is None:
                 imag = 0
