@@ -443,12 +443,12 @@ if __name__ == '__main__':
 # test9 = [1.234567, 7.654321, 1.001001, 0.000001]
 # test10 = [(9.889888+0j), (0.23356700000000008-7.654321j), (-5.418754000000001+0j), (0.23356700000000008+7.654321j)]
 
-# test11 = [1, 2, 3, 4, 5, 0, 0, 0]
-# test12 = [(15+0j), (-5.414213562373095-7.242640687119286j), (3+2j), (-2.585786437626905-1.2426406871192857j), (3+0j), (-2.585786437626905+1.2426406871192857j), (3-2j), (-5.414213562373095+7.242640687119286j)]
 
 # print(ifft(npfft(test1)))
 # print(ifft(npfft(test3)))
 # print(ifft(npfft(test5)))
 # print(ifft(npfft(test7)))
 # print(ifft(npfft(test9)))
-# print(ifft(npfft(test11)))
+
+# # only works if ifft() doesn't floor the final answer
+# print(ifft(npfft(ifft(npfft(ifft(npfft(test9)))))))
