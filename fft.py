@@ -2,7 +2,7 @@ import sys, cmath, math, re, decimal
 
 
 class hpc:
-    """A high precision complex class utillizing the
+    """A high precision complex class utilizing the
     standard library Decimal class.
     """    
 
@@ -182,12 +182,19 @@ class hpc:
     
 
     def  __pow__(self, other):
-        # power dunder method override hack, currently does not retain precision
+        """Dunder method that overloads the `**` operator.
 
-        self_complex = complex(self.real, self.imag) if isinstance(self, hpc) else self
-        other_complex = complex(other.real, other.imag) if isinstance(other, hpc) else other
+        Args:
+            other (hpc): The hpc representing the exponent
 
-        return hpc(self_complex ** other_complex)
+        Returns:
+            hpc: self raised to the power of other
+        """
+
+        if not isinstance(other, hpc):
+            other = hpc(other)
+
+        return hpc(complex(self.real, self.imag) ** complex(other.real, other.imag))
 
 
 
@@ -213,6 +220,8 @@ class hpc:
 
 
     def __rpow__(self, other):
+        # reverse power
+        other = hpc(other)
         return hpc.__pow__(other, self)
 
 
