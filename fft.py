@@ -1,13 +1,5 @@
 import sys, cmath, math, re, decimal
 
-# import numpy as np
-
-# def npfft(li):
-#     return (np.fft.fft(li)).tolist()
-
-# def npifft(li):
-#     return (np.fft.ifft(li)).tolist()
-
 
 class hpc:
     """A high precision complex class utillizing the
@@ -543,11 +535,11 @@ if __name__ == '__main__':
 # test10 = [(9.889888+0j), (0.23356700000000008-7.654321j), (-5.418754000000001+0j), (0.23356700000000008+7.654321j)]
 
 
-# print(ifft(npfft(test1)))
-# print(ifft(npfft(test3)))
-# print(ifft(npfft(test5)))
-# print(ifft(npfft(test7)))
-# print(ifft(npfft(test9)))
+# print(ifft(fft(test1)))
+# print(ifft(fft(test3)))
+# print(ifft(fft(test5)))
+# print(ifft(fft(test7)))
+# print(ifft(fft(test9)))
 
-# # only works if ifft() doesn't floor the final answer
-# print(ifft(npfft(ifft(npfft(ifft(npfft(test9)))))))
+# # only reliable if ifft() doesn't floor the final answer or if time-domain signal is only composed of integers
+# print(ifft(fft(ifft(fft(ifft(fft(test5)))))))
