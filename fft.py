@@ -179,6 +179,16 @@ class hpc:
 
         return hpc(ans_real, ans_imag)
 
+    
+
+    def  __pow__(self, other):
+        # power dunder method override hack, currently does not retain precision
+
+        self_complex = complex(self.real, self.imag) if isinstance(self, hpc) else self
+        other_complex = complex(other.real, other.imag) if isinstance(other, hpc) else other
+
+        return hpc(self_complex ** other_complex)
+
 
 
     # Since addition and multiplication are commutative,
@@ -199,6 +209,12 @@ class hpc:
         # reverse division
         other = hpc(other)
         return hpc.__truediv__(other, self)
+
+
+
+    def __rpow__(self, other):
+        return hpc.__pow__(other, self)
+
 
 
 
