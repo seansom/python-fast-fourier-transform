@@ -30,8 +30,8 @@ class hpc:
             real = real.replace(' ', '')
 
             real_imag_regex = re.compile(r'^([\+-]?[\d]+\.?[\d]*)([\+-][\d]+\.?[\d]*)j$')
-            real_only_regex = re.compile(r'(^[\+-]?[\d]+\.?[\d]*)$')
-            imag_only_regex = re.compile(r'(^[\+-]?[\d]+\.?[\d]*)j$')
+            real_only_regex = re.compile(r'^([\+-]?[\d]+\.?[\d]*)$')
+            imag_only_regex = re.compile(r'^([\+-]?[\d]+\.?[\d]*)j$')
 
             if match := real_imag_regex.findall(real):
                 real, imag = match[0]
@@ -525,7 +525,6 @@ def main():
 
 if __name__ == '__main__':
     main()
-
 
 
 # test1 = [0, 2, 4, 6]
