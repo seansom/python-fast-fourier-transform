@@ -465,7 +465,8 @@ def main():
         lines.append(line)
         line = sys.stdin.readline()
 
-    signals_num = int(lines.pop(0)[0])
+    signals_num = int(lines[0])
+    lines.pop(0)
 
     answers = [signals_num]
 
