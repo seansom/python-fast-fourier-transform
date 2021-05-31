@@ -55,6 +55,26 @@ class hpc:
 
 
 
+    def re(self):
+        """Method that returns the real part of the hpc.
+
+        Returns:
+            Decimal: real part of the hpc
+        """        
+        return self.real
+    
+
+
+    def im(self):
+        """Method that returns the imaginary part of the hpc.
+
+        Returns:
+            Decimal: imaginary part of the hpc
+        """ 
+        return self.imag
+
+
+
     def __repr__(self):
         """Dunder method that gives the string
         representation of the hpc.
@@ -161,24 +181,25 @@ class hpc:
 
 
 
-    def re(self):
-        """Method that returns the real part of the hpc.
+    # Since addition and multiplication are commutative,
+    # set reverse operations to be the same
+    __radd__ = __add__
+    __rmul__ = __mul__
 
-        Returns:
-            Decimal: real part of the hpc
-        """        
-        return self.real
+
+
+    def  __rsub__(self, other):
+        # reverse subtraction
+        other = hpc(other)
+        return hpc.__sub__(other, self)
+
+
     
+    def __rtruediv__(self, other):
+        # reverse division
+        other = hpc(other)
+        return hpc.__truediv__(other, self)
 
-
-    def im(self):
-        """Method that returns the imaginary part of the hpc.
-
-        Returns:
-            Decimal: imaginary part of the hpc
-        """ 
-        return self.imag
-    
 
 
 def memoize(func):
