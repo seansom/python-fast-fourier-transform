@@ -233,7 +233,9 @@ def hpcround(x, decimal_places= 6, return_real_only= False):
         real part of the hpc. Defaults to False.
 
     Returns:
-        complex: The rounded off hpc as a complex object
+        complex or float: The rounded off hpc as a complex object. If 
+        return_real_only is set to True, then the rounded real part of 
+        the hpc is returned as a float object.
     """    
 
     rounding_factor = 10 ** decimal_places
