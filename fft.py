@@ -220,14 +220,14 @@ def is_power_of2(N):
 
 
 
-def hpcround(x, decimal_places= 6, return_real_only= False):
+def hpcround(x, decimal_places= 18, return_real_only= False):
     """Function that rounds off hpc objects and converts it into a 
     complex object.
 
     Args:
         x (hpc): The hpc to be rounded off
         decimal_places (int, optional): The number of decimal places 
-        desired. Defaults to 6.
+        desired. Defaults to 18.
         return_real_only (bool, optional): Boolean option to return only 
         real part of the hpc. Defaults to False.
 
@@ -280,6 +280,83 @@ def w(n, k, N):
         hpc: e ^ (-2πnk / N)
     """    
     return hpc(cmath.exp((-2 * cmath.pi * (1j) * n * k) / N))
+
+
+
+def fft_helper(signal):
+    """Helper function to fft() that solves for the 
+    fast fourier transform of a freq-domain signal.
+
+    Args:
+        signal (list): The list (hpc, complex, or str) that
+        represents the time-domain elements of the signal to 
+        be transformed.
+
+    Returns:
+        list: A list of hpc objects that represents the 
+        freq-domain elements of the transformed signal.
+    """
+
+    signal_copy = signal.copy()
+
+    while not is_power_of2(len(signal_copy)):
+        signal_copy.append(0)
+
+    N = len(signal_copy)
+
+    if not isinstance(signal_copy[0], hpc):
+        signal_copy = [hpc(item) for item in signal_copy]
+
+    # base cases
+    if N == 2:
+        return [signal_copy[0] + signal_copy[1], signal_copy[0] - signal_copy[1]]
+    if N == 1:
+        return [signal_copy[0]]
+
+    # split X to even, odd1, and odd3 elements
+    X_even = fft_helper([signal[index] for index in range(N) if index % 2 == 0])
+    X_odd1 = fft_helper([signal[index] for index in range(N) if index != 0 and (index - 1) % 4 == 0])
+    X_odd3 = fft_helper([signal[index] for index in range(N) if index != 0 and (index - 3) % 4 == 0])
+
+    # solve for the twiddle factors to be used
+    w1k = [w(1, k, N) for k in range(N)]
+    w3k = [w(1, 3 * k, N) for k in range(N)]
+
+    # compute for sum and diff odd
+    sum_odd = [X_odd1[index] * w1k[index] + X_odd3[index] * w3k[index] for index in range(len(X_odd1))]
+    diff_odd = [X_odd1[index] * w1k[index] - X_odd3[index] * w3k[index] for index in range(len(X_odd1))]
+
+    # Compute for the quadrants of X
+    E = len(X_even) // 2
+
+    X0 = [X_even[index] + sum_odd[index] for index in range(E)]
+    X1 = [X_even[index + E] - diff_odd[index] * 1j for index in range(E)]
+    X2 = [X_even[index] - sum_odd[index] for index in range(E)]
+    X3 = [X_even[index + E] + diff_odd[index] * 1j for index in range(E)]
+
+    X = flatten_list([X0, X1, X2, X3])
+
+    return X
+
+
+
+def fft(signal):
+    """The client function that returns the fast fourier 
+    transform of a freq-domain signal. The function rounds off
+    the elements of the transformed signal to 6 decimal places,
+    and the transformation itself is handled by fft_helper().
+
+    Args:
+        signal (list): The list (hpc, complex, or str) that
+        represents the time-domain elements of the signal to 
+        be transformed.
+
+    Returns:
+        list: A list of integers that represents the 
+        freq-domain elements of the transformed signal.
+    """
+
+    return [hpcround(item, decimal_places= 6) for item in fft_helper(signal)]
 
 
 
