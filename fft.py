@@ -6,37 +6,37 @@ class hpc:
     standard library Decimal class.
     """    
 
-    def __init__(self, real, imag= None):
+    def __init__(self, x, y= None):
 
-        if imag is None:
+        if y is None:
 
-            if isinstance(real, hpc):
-                self.real = real.real
-                self.imag = real.imag
+            if isinstance(x, hpc):
+                self.real = x.real
+                self.imag = x.imag
 
             # i.e. hpc(1 + 2j)
-            elif isinstance(real, complex):
-                self.real = decimal.Decimal(real.real)
-                self.imag = decimal.Decimal(real.imag)
+            elif isinstance(x, complex):
+                self.real = decimal.Decimal(x.real)
+                self.imag = decimal.Decimal(x.imag)
 
             # i.e. hpc('1 + 2j') or hpc('-2.0') or hpc('3.2j')
-            elif isinstance(real, str):
-                real = real.replace(' ', '')
+            elif isinstance(x, str):
+                x = x.replace(' ', '')
 
                 real_imag_regex = re.compile(r'^([\+-]?[\d]+\.?[\d]*)([\+-][\d]+\.?[\d]*)j$')
                 real_only_regex = re.compile(r'^([\+-]?[\d]+\.?[\d]*)$')
                 imag_only_regex = re.compile(r'^([\+-]?[\d]+\.?[\d]*)j$')
 
-                if match := real_imag_regex.findall(real):
+                if match := real_imag_regex.findall(x):
                     real, imag = match[0]
                     self.real = decimal.Decimal(real)
                     self.imag = decimal.Decimal(imag)
 
-                elif match:= real_only_regex.findall(real):
+                elif match:= real_only_regex.findall(x):
                     self.real = decimal.Decimal(match[0])
                     self.imag = decimal.Decimal(0)
 
-                elif match:= imag_only_regex.findall(real):
+                elif match:= imag_only_regex.findall(x):
                     self.real = decimal.Decimal(0)
                     self.imag = decimal.Decimal(match[0])
 
@@ -46,7 +46,7 @@ class hpc:
             # i.e. hpc(1.23)
             else:
                 try:
-                    self.real = decimal.Decimal(real)
+                    self.real = decimal.Decimal(x)
                     self.imag = decimal.Decimal(0)
                 except:
                     raise ValueError('Invalid hpc constructor arguments.')
@@ -55,8 +55,8 @@ class hpc:
         # i.e. hpc(1, 2) or hpc('1', '2') or hpc('1.', -2.32)
         else:
             try:
-                self.real = decimal.Decimal(real)
-                self.imag = decimal.Decimal(imag)
+                self.real = decimal.Decimal(x)
+                self.imag = decimal.Decimal(y)
             except:
                 raise ValueError('Invalid hpc constructor arguments.')
 
