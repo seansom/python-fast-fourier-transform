@@ -8,38 +8,40 @@ class hpc:
 
     def __init__(self, real, imag= None):
 
-        if isinstance(real, hpc) and imag is None:
-            self.real = real.real
-            self.imag = real.imag
+        if imag is None:
 
-        # i.e. hpc(1 + 2j)
-        elif isinstance(real, complex) and imag is None:
-            self.real = decimal.Decimal(real.real)
-            self.imag = decimal.Decimal(real.imag)
+            if isinstance(real, hpc):
+                self.real = real.real
+                self.imag = real.imag
 
-        # i.e. hpc('1 + 2j') or hpc('-2.0') or hpc('3.2j')
-        elif isinstance(real, str) and imag is None:
-            real = real.replace(' ', '')
+            # i.e. hpc(1 + 2j)
+            elif isinstance(real, complex):
+                self.real = decimal.Decimal(real.real)
+                self.imag = decimal.Decimal(real.imag)
 
-            real_imag_regex = re.compile(r'^([\+-]?[\d]+\.?[\d]*)([\+-][\d]+\.?[\d]*)j$')
-            real_only_regex = re.compile(r'^([\+-]?[\d]+\.?[\d]*)$')
-            imag_only_regex = re.compile(r'^([\+-]?[\d]+\.?[\d]*)j$')
+            # i.e. hpc('1 + 2j') or hpc('-2.0') or hpc('3.2j')
+            elif isinstance(real, str):
+                real = real.replace(' ', '')
 
-            if match := real_imag_regex.findall(real):
-                real, imag = match[0]
-                self.real = decimal.Decimal(real)
-                self.imag = decimal.Decimal(imag)
+                real_imag_regex = re.compile(r'^([\+-]?[\d]+\.?[\d]*)([\+-][\d]+\.?[\d]*)j$')
+                real_only_regex = re.compile(r'^([\+-]?[\d]+\.?[\d]*)$')
+                imag_only_regex = re.compile(r'^([\+-]?[\d]+\.?[\d]*)j$')
 
-            elif match:= real_only_regex.findall(real):
-                self.real = decimal.Decimal(match[0])
-                self.imag = decimal.Decimal(0)
+                if match := real_imag_regex.findall(real):
+                    real, imag = match[0]
+                    self.real = decimal.Decimal(real)
+                    self.imag = decimal.Decimal(imag)
 
-            elif match:= imag_only_regex.findall(real):
-                self.real = decimal.Decimal(0)
-                self.imag = decimal.Decimal(match[0])
+                elif match:= real_only_regex.findall(real):
+                    self.real = decimal.Decimal(match[0])
+                    self.imag = decimal.Decimal(0)
 
-            else:
-                raise ValueError('Malformed string in hpc constructor.')
+                elif match:= imag_only_regex.findall(real):
+                    self.real = decimal.Decimal(0)
+                    self.imag = decimal.Decimal(match[0])
+
+                else:
+                    raise ValueError('Malformed string in hpc constructor.')
 
 
         # i.e. hpc(1, 2) or hpc('1', '2') or hpc('1.', -2.32)
@@ -183,6 +185,7 @@ class hpc:
 
     def  __pow__(self, other):
         """Dunder method that overloads the `**` operator.
+        Currently does not ensure high precision.
 
         Args:
             other (hpc): The hpc representing the exponent
