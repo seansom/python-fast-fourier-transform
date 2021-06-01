@@ -46,8 +46,7 @@ class hpc:
 
         # i.e. hpc(1, 2) or hpc('1', '2') or hpc('1.', -2.32)
         else:
-            if imag is None:
-                imag = 0
+            imag = 0
             
             try:
                 self.real = decimal.Decimal(real)
