@@ -43,11 +43,17 @@ class hpc:
                 else:
                     raise ValueError('Malformed string in hpc constructor.')
 
+            # i.e. hpc(1.23)
+            else:
+                try:
+                    self.real = decimal.Decimal(real)
+                    self.imag = decimal.Decimal(0)
+                except:
+                    raise ValueError('Invalid hpc constructor arguments.')
+
 
         # i.e. hpc(1, 2) or hpc('1', '2') or hpc('1.', -2.32)
         else:
-            imag = 0
-            
             try:
                 self.real = decimal.Decimal(real)
                 self.imag = decimal.Decimal(imag)
