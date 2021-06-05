@@ -1,2 +1,2 @@
 # python-fast-fourier-transform
-A machine project for CoE 164. A small Python library without any non-standard library dependencies that provides split-radix implementations of the fast fourier transform (FFT) and inverse fast fourier transform (IFFT). Offers high precision (up to 28 decimal places) of results by using the in-library defined class high-precision complex (hpc) objects.
+A machine project for CoE 164. A small Python library without any non-standard library dependencies that provides split-radix implementations of the fast fourier transform (FFT) and inverse fast fourier transform (IFFT). Offers high precision of results by using the in-library defined class high-precision complex (hpc) objects.
