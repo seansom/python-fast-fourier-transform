@@ -61,15 +61,13 @@ class hpc:
                 raise ValueError('Invalid hpc constructor arguments.')
 
 
-
     def re(self):
         """Method that returns the real part of the hpc.
 
         Returns:
             Decimal: real part of the hpc
         """        
-        return self.real
-    
+        return self.real 
 
 
     def im(self):
@@ -80,6 +78,16 @@ class hpc:
         """ 
         return self.imag
 
+    
+    def __complex__(self):
+        """Overload of type conversion from hpc to complex class.
+        Note: type conversion to complex reduces decimal places
+        precision to 18.
+
+        Returns:
+            complex: The complex representation of the hpc.
+        """        
+        return complex(self.real, self.imag)
 
 
     def __repr__(self):
@@ -101,7 +109,6 @@ class hpc:
         return f'{self.real} + {self.imag}j'
 
 
-
     def __add__(self, other):
         """Dunder method that overloads the `+` operator.
 
@@ -119,7 +126,6 @@ class hpc:
         ans_real = self.real + other.real
         ans_imag = self.imag + other.imag
         return hpc(ans_real, ans_imag)
-
 
 
     def __sub__(self, other):
@@ -141,7 +147,6 @@ class hpc:
         return hpc(ans_real, ans_imag)
 
 
-
     def __mul__(self, other):
         """Dunder method that overloads the `*` operator.
 
@@ -159,7 +164,6 @@ class hpc:
         ans_real = (self.real * other.real) - (self.imag * other.imag)
         ans_imag = (self.real * other.imag) + (self.imag * other.real)
         return hpc(ans_real, ans_imag)
-
 
 
     def __truediv__(self, other):
@@ -185,7 +189,6 @@ class hpc:
         ans_imag = ((self.imag * other.real) - (self.real * other.imag)) / denom
 
         return hpc(ans_real, ans_imag)
-
     
 
     def  __pow__(self, other):
@@ -198,12 +201,18 @@ class hpc:
         Returns:
             hpc: self raised to the power of other
         """
+        a = self.real
+        b = self.imag
+        c = other.real
+        d = other.imag
+
+        r = (a ** 2 + b ** 2).sqrt()
+        theta = math.atan2()
 
         if not isinstance(other, hpc):
             other = hpc(other)
 
         return hpc(complex(self.real, self.imag) ** complex(other.real, other.imag))
-
 
 
     # Since addition and multiplication are commutative,
@@ -212,12 +221,10 @@ class hpc:
     __rmul__ = __mul__
 
 
-
     def  __rsub__(self, other):
         # reverse subtraction
         other = hpc(other)
         return hpc.__sub__(other, self)
-
 
     
     def __rtruediv__(self, other):
@@ -226,13 +233,10 @@ class hpc:
         return hpc.__truediv__(other, self)
 
 
-
     def __rpow__(self, other):
         # reverse power
         other = hpc(other)
         return hpc.__pow__(other, self)
-
-
 
 
 def memoize(func):
@@ -257,7 +261,6 @@ def memoize(func):
     return wrapper
 
 
-
 def flatten_list(li):
     """Flattens a 2d list into a single list.
 
@@ -273,7 +276,6 @@ def flatten_list(li):
         return li
 
 
-
 @memoize
 def is_power_of2(N):
     """Checks if an input N is a power of 2.
@@ -287,8 +289,7 @@ def is_power_of2(N):
     return (N & (N - 1) == 0) and N != 0
 
 
-
-def hpcround(x, decimal_places= 28, return_real_only= False):
+def hpcround(x, decimal_places= 18, return_real_only= False):
     """Function that rounds off hpc objects and converts it into a 
     complex object or float object is return_real_only is set to True.
 
@@ -333,7 +334,6 @@ def hpcround(x, decimal_places= 28, return_real_only= False):
     return complex(x_real, x_imag)
 
 
-
 @memoize
 def sin(x):
     """Return the sine of the decimal object x as measured in radians.
@@ -359,7 +359,6 @@ def sin(x):
         s += num / fact * sign
     decimal.getcontext().prec -= 2
     return +s
-
 
 
 @memoize
@@ -389,7 +388,6 @@ def cos(x):
     return +s
 
 
-
 @memoize
 def w(n, k, N):
     """Function that computes for the twiddle factor
@@ -408,9 +406,8 @@ def w(n, k, N):
     return hpc(cos(theta), sin(theta))
 
 
-
-def fft_helper(signal):
-    """Helper function to fft() that solves for the 
+def fft(signal):
+    """Function that solves for the 
     fast fourier transform of a freq-domain signal.
 
     Args:
@@ -440,9 +437,9 @@ def fft_helper(signal):
         return [signal_copy[0]]
 
     # split X to even, odd1, and odd3 elements
-    X_even = fft_helper([signal[index] for index in range(N) if index % 2 == 0])
-    X_odd1 = fft_helper([signal[index] for index in range(N) if index != 0 and (index - 1) % 4 == 0])
-    X_odd3 = fft_helper([signal[index] for index in range(N) if index != 0 and (index - 3) % 4 == 0])
+    X_even = fft([signal[index] for index in range(N) if index % 2 == 0])
+    X_odd1 = fft([signal[index] for index in range(N) if index != 0 and (index - 1) % 4 == 0])
+    X_odd3 = fft([signal[index] for index in range(N) if index != 0 and (index - 3) % 4 == 0])
 
     # solve for the twiddle factors to be used
     w1k = [w(1, k, N) for k in range(N)]
@@ -465,29 +462,8 @@ def fft_helper(signal):
     return X
 
 
-
-def fft(signal):
-    """The client function that returns the fast fourier 
-    transform of a freq-domain signal. The function rounds off
-    the elements of the transformed signal to 6 decimal places,
-    and the transformation itself is handled by fft_helper().
-
-    Args:
-        signal (list): The list (hpc, complex, or str) that
-        represents the time-domain elements of the signal to 
-        be transformed.
-
-    Returns:
-        list: A list of integers that represents the 
-        freq-domain elements of the transformed signal.
-    """
-
-    return [hpcround(item, decimal_places= 6) for item in fft_helper(signal)]
-
-
-
-def ifft_helper(signal):
-    """Helper function to ifft() that solves for the inverse
+def ifft(signal):
+    """Function that solves for the inverse
     fast fourier transform of a freq-domain signal.
 
     Args:
@@ -541,9 +517,9 @@ def ifft_helper(signal):
     x_odd3 = [(sum_odd[index] - diff_odd[index]) / (w3k[index] *  2) for index in range(N // 4)]
 
     # compute for the time-domain elements of x by recursively calling ifft_helper()
-    x_even = ifft_helper(x_even)
-    x_odd1 = ifft_helper(x_odd1)
-    x_odd3 = ifft_helper(x_odd3)
+    x_even = ifft(x_even)
+    x_odd1 = ifft(x_odd1)
+    x_odd3 = ifft(x_odd3)
 
     # reorder the subsignals into a single list of time-domain elements of x 
     x = [None] * N
@@ -558,31 +534,11 @@ def ifft_helper(signal):
     return x
 
 
-
-def ifft(signal):
-    """The client function that returns the inverse
-    fast fourier transform of a freq-domain signal. The 
-    function only floors the elements of the transformed 
-    signal, and the transformation itself is handled by 
-    ifft_helper().
-
-    Args:
-        signal (list): The list (hpc, complex, or str) that
-        represents the freq-domain elements of the signal to 
-        be transformed.
-
-    Returns:
-        list: A list of integers that represents the 
-        time-domain elements of the transformed signal.
-    """
-
-    return [int(hpcround(item, decimal_places= 1, return_real_only= True)) for item in ifft_helper(signal)]
-
-
-
 def main():
     """The main function that handles the reading and writing
-    to stdin and stdout.
+    to stdin and stdout. Before printing the inverse transformed
+    elements of each time signal, it rounds off the signal to 1 
+    decimal place then converts it into integers.
     """    
     lines = []
 
@@ -608,13 +564,13 @@ def main():
         freq_signal_length = re.search(r'\d+', signal).group()
         signal = signal.replace(freq_signal_length, '', 1)
         
-        # convert freq elements string into a complex list
+        # convert freq elements string into a list of complex numbers as strings
         signal = signal.replace(' ', '')
         signal_regex = re.compile(r'[\+-][\d]+\.[\d]+[\+-][\d]+\.[\d]+j')
 
         signal = [hpc(item) for item in signal_regex.findall(signal)]
 
-        time_signal = ifft(signal)
+        time_signal = [int(hpcround(item, decimal_places= 1, return_real_only= True)) for item in ifft(signal)]
         ans = [time_signal_length]
 
         for i in range(int(time_signal_length)):
@@ -624,7 +580,6 @@ def main():
 
     for ans in answers:
         print(ans)
-
 
 
 if __name__ == '__main__':
@@ -653,5 +608,6 @@ if __name__ == '__main__':
 # print(ifft(fft(test7)))
 # print(ifft(fft(test9)))
 
-# # only reliable if ifft() doesn't floor the final answer or if time-domain signal is only composed of integers
-# print(ifft(fft(ifft(fft(ifft(fft(test5)))))))
+# only reliable if ifft() doesn't floor the final answer or if time-domain signal is only composed of integers
+# a = (ifft(fft(ifft(fft(ifft(fft(test5)))))))
+# print([hpcround(item) for item in a])
