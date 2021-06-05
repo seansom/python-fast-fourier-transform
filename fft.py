@@ -1,4 +1,4 @@
-import sys, cmath, math, re, decimal
+import sys, math, re, decimal
 
 
 class hpc:
@@ -288,7 +288,7 @@ def is_power_of2(N):
 
 
 
-def hpcround(x, decimal_places= 18, return_real_only= False):
+def hpcround(x, decimal_places= 28, return_real_only= False):
     """Function that rounds off hpc objects and converts it into a 
     complex object or float object is return_real_only is set to True.
 
@@ -335,6 +335,62 @@ def hpcround(x, decimal_places= 18, return_real_only= False):
 
 
 @memoize
+def sin(x):
+    """Return the sine of the decimal object x as measured in radians.
+    Code from the official decimal library docs. Uses the Taylor
+    series approximation for the trigonometric function.
+
+    >>> print(sin(Decimal('0.5')))
+    0.4794255386042030002732879352
+    >>> print(sin(0.5))
+    0.479425538604
+    >>> print(sin(0.5+0j))
+    (0.479425538604+0j)
+    """
+    x = x % (2 * decimal.Decimal('3.1415926535897932384626433832'))
+    decimal.getcontext().prec += 2
+    i, lasts, s, fact, num, sign = 1, 0, x, 1, x, 1
+    while s != lasts:
+        lasts = s
+        i += 2
+        fact *= i * (i-1)
+        num *= x * x
+        sign *= -1
+        s += num / fact * sign
+    decimal.getcontext().prec -= 2
+    return +s
+
+
+
+@memoize
+def cos(x):
+    """Return the cosine of decimal object x as measured in radians.
+    Code from the official decimal library docs. Uses the Taylor
+    series approximation for the trigonometric function.
+
+    >>> print(cos(Decimal('0.5')))
+    0.8775825618903727161162815826
+    >>> print(cos(0.5))
+    0.87758256189
+    >>> print(cos(0.5+0j))
+    (0.87758256189+0j)
+    """
+    x = x % (2 * decimal.Decimal('3.1415926535897932384626433832'))
+    decimal.getcontext().prec += 2
+    i, lasts, s, fact, num, sign = 0, 0, 1, 1, 1, 1
+    while s != lasts:
+        lasts = s
+        i += 2
+        fact *= i * (i-1)
+        num *= x * x
+        sign *= -1
+        s += num / fact * sign
+    decimal.getcontext().prec -= 2
+    return +s
+
+
+
+@memoize
 def w(n, k, N):
     """Function that computes for the twiddle factor
     used in fourier transformations.
@@ -345,9 +401,11 @@ def w(n, k, N):
         N (int): Number of total elements
 
     Returns:
-        hpc: e ^ (-2πnk / N)
-    """    
-    return hpc(cmath.exp((-2 * cmath.pi * (1j) * n * k) / N))
+        hpc: e ^ (-2πjnk / N) in rectangular form
+    """
+    pi = decimal.Decimal('3.1415926535897932384626433832')
+    theta = -2 * pi * n * k / N
+    return hpc(cos(theta), sin(theta))
 
 
 
