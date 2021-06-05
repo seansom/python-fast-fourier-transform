@@ -562,8 +562,8 @@ def main():
         time_signal = [int(hpc_round(item, decimal_places= 1, return_real_only= True)) for item in ifft(signal)]
         ans = [time_signal_length]
 
-        for i in range(int(time_signal_length)):
-            ans.append(str(time_signal[i]))
+        for index in range(int(time_signal_length)):
+            ans.append(str(time_signal[index]))
 
         answers.append(' '.join(ans))
 
