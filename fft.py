@@ -201,17 +201,6 @@ class hpc:
         Returns:
             hpc: self raised to the power of other
         """
-        a = self.real
-        b = self.imag
-        c = other.real
-        d = other.imag
-
-        r = (a ** 2 + b ** 2).sqrt()
-        theta = math.atan2()
-
-        if not isinstance(other, hpc):
-            other = hpc(other)
-
         return hpc(complex(self.real, self.imag) ** complex(other.real, other.imag))
 
 
@@ -237,6 +226,51 @@ class hpc:
         # reverse power
         other = hpc(other)
         return hpc.__pow__(other, self)
+
+
+def hpcround(x, decimal_places= 18, return_real_only= False):
+    """Function that rounds off hpc objects and converts it into a 
+    complex object or float object is return_real_only is set to True.
+
+    Args:
+        x (hpc): The hpc to be rounded off
+        decimal_places (int, optional): The number of decimal places 
+        desired. Defaults to 18.
+        return_real_only (bool, optional): Boolean option to return only 
+        real part of the hpc. Defaults to False.
+
+    Returns:
+        complex or float: The rounded off hpc as a complex object. If 
+        return_real_only is set to True, then the rounded real part of 
+        the hpc is returned as a float object.
+    """    
+
+    rounding_factor = 10 ** decimal_places
+
+    x_real = x.re() * rounding_factor
+    real_delta = x_real - int(x_real)
+    
+    if real_delta >= 0.5 or -0.5 < real_delta <= 0:
+        x_real = math.ceil(x_real)
+    else:
+        x_real = math.floor(x_real)
+
+    x_real = x_real / rounding_factor
+
+    if return_real_only:
+        return x_real
+
+    x_imag = x.im() * rounding_factor
+    imag_delta = x_imag - int(x_imag)
+
+    if imag_delta >= 0.5 or -0.5 < imag_delta <= 0:
+        x_imag = math.ceil(x_imag)
+    else:
+        x_imag = math.floor(x_imag)
+
+    x_imag = x_imag / rounding_factor
+
+    return complex(x_real, x_imag)
 
 
 def memoize(func):
@@ -287,51 +321,6 @@ def is_power_of2(N):
         bool: True or False
     """    
     return (N & (N - 1) == 0) and N != 0
-
-
-def hpcround(x, decimal_places= 18, return_real_only= False):
-    """Function that rounds off hpc objects and converts it into a 
-    complex object or float object is return_real_only is set to True.
-
-    Args:
-        x (hpc): The hpc to be rounded off
-        decimal_places (int, optional): The number of decimal places 
-        desired. Defaults to 18.
-        return_real_only (bool, optional): Boolean option to return only 
-        real part of the hpc. Defaults to False.
-
-    Returns:
-        complex or float: The rounded off hpc as a complex object. If 
-        return_real_only is set to True, then the rounded real part of 
-        the hpc is returned as a float object.
-    """    
-
-    rounding_factor = 10 ** decimal_places
-
-    x_real = x.re() * rounding_factor
-    real_delta = x_real - int(x_real)
-    
-    if real_delta >= 0.5 or -0.5 < real_delta <= 0:
-        x_real = math.ceil(x_real)
-    else:
-        x_real = math.floor(x_real)
-
-    x_real = x_real / rounding_factor
-
-    if return_real_only:
-        return x_real
-
-    x_imag = x.im() * rounding_factor
-    imag_delta = x_imag - int(x_imag)
-
-    if imag_delta >= 0.5 or -0.5 < imag_delta <= 0:
-        x_imag = math.ceil(x_imag)
-    else:
-        x_imag = math.floor(x_imag)
-
-    x_imag = x_imag / rounding_factor
-
-    return complex(x_real, x_imag)
 
 
 @memoize
