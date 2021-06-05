@@ -526,7 +526,7 @@ def ifft(signal):
 def main():
     """The main function that handles the reading and writing
     to stdin and stdout. Before printing the inverse transformed
-    elements of each time signal, it rounds off the signal to 1 
+    elements of each time signal, it rounds off the elements to 1 
     decimal place then converts it into integers.
     """    
     lines = []
