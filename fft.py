@@ -228,49 +228,39 @@ class hpc:
         return hpc.__pow__(other, self)
 
 
-def hpc_round(x, decimal_places= 18, return_real_only= False):
-    """Function that rounds off hpc objects and converts it into a 
-    complex object or float object if return_real_only is set to True.
+def hpc_round(x, decimal_places=28):
+    """Function that rounds off hpc objects to a specified number of 
+    decimal places.
 
     Args:
         x (hpc): The hpc to be rounded off
         decimal_places (int, optional): The number of decimal places 
-        desired. Defaults to 18.
-        return_real_only (bool, optional): Boolean option to return only 
-        real part of the hpc. Defaults to False.
+        desired. Defaults to 28.
 
     Returns:
-        complex or float: The rounded off hpc as a complex object. If 
-        return_real_only is set to True, then the rounded real part of 
-        the hpc is returned as a float object.
-    """    
-
+        hpc: The rounded off hpc object.
+    """
     rounding_factor = 10 ** decimal_places
 
     x_real = x.re() * rounding_factor
     real_delta = x_real - int(x_real)
-    
-    if real_delta >= 0.5 or -0.5 < real_delta <= 0:
-        x_real = math.ceil(x_real)
-    else:
-        x_real = math.floor(x_real)
-
-    x_real = x_real / rounding_factor
-
-    if return_real_only:
-        return x_real
-
     x_imag = x.im() * rounding_factor
     imag_delta = x_imag - int(x_imag)
+    
+    if real_delta >= 0.5 or -0.5 < real_delta <= 0:
+        x_real = decimal.Decimal(math.ceil(x_real))
+    else:
+        x_real = decimal.Decimal(math.floor(x_real))
 
     if imag_delta >= 0.5 or -0.5 < imag_delta <= 0:
-        x_imag = math.ceil(x_imag)
+        x_imag = decimal.Decimal(math.ceil(x_imag))
     else:
-        x_imag = math.floor(x_imag)
+        x_imag = decimal.Decimal(math.floor(x_imag))
 
+    x_real = x_real / rounding_factor
     x_imag = x_imag / rounding_factor
 
-    return complex(x_real, x_imag)
+    return hpc(x_real, x_imag)
 
 
 def memoize(func):
@@ -395,8 +385,8 @@ def w(n, k, N):
     return hpc(cos(theta), sin(theta))
 
 
-def fft(signal):
-    """Function that solves for the 
+def fft_helper(signal):
+    """Helper function to fft() that solves for the 
     fast fourier transform of a freq-domain signal.
 
     Args:
@@ -426,9 +416,9 @@ def fft(signal):
         return [signal_copy[0]]
 
     # split X to even, odd1, and odd3 elements
-    X_even = fft([signal[index] for index in range(N) if index % 2 == 0])
-    X_odd1 = fft([signal[index] for index in range(N) if index != 0 and (index - 1) % 4 == 0])
-    X_odd3 = fft([signal[index] for index in range(N) if index != 0 and (index - 3) % 4 == 0])
+    X_even = fft_helper([signal[index] for index in range(N) if index % 2 == 0])
+    X_odd1 = fft_helper([signal[index] for index in range(N) if index != 0 and (index - 1) % 4 == 0])
+    X_odd3 = fft_helper([signal[index] for index in range(N) if index != 0 and (index - 3) % 4 == 0])
 
     # solve for the twiddle factors to be used
     w1k = [w(1, k, N) for k in range(N)]
@@ -451,8 +441,26 @@ def fft(signal):
     return X
 
 
-def ifft(signal):
-    """Function that solves for the inverse
+def fft(signal, decimal_places=28):
+    """The client function that returns the fast fourier 
+    transform of a freq-domain signal. The function only 
+    rounds off the elements of the transformed signal, and 
+    the transformation itself is handled by fft_helper().
+
+    Args:
+        signal (list): The list (hpc, complex, or str) that
+        represents the time-domain elements of the signal to 
+        be transformed.
+
+    Returns:
+        list: A list of rounded off hpc objects that represents 
+        the freq-domain elements of the transformed signal.
+    """
+    return [hpc_round(item, decimal_places=decimal_places) for item in fft_helper(signal)]
+
+
+def ifft_helper(signal):
+    """Helper function to ifft() that solves for the inverse
     fast fourier transform of a freq-domain signal.
 
     Args:
@@ -506,9 +514,9 @@ def ifft(signal):
     x_odd3 = [(sum_odd[index] - diff_odd[index]) / (w3k[index] *  2) for index in range(N // 4)]
 
     # compute for the time-domain elements of x by recursively calling ifft_helper()
-    x_even = ifft(x_even)
-    x_odd1 = ifft(x_odd1)
-    x_odd3 = ifft(x_odd3)
+    x_even = ifft_helper(x_even)
+    x_odd1 = ifft_helper(x_odd1)
+    x_odd3 = ifft_helper(x_odd3)
 
     # reorder the subsignals into a single list of time-domain elements of x 
     x = [None] * N
@@ -521,6 +529,27 @@ def ifft(signal):
         x[4 * index + 3] = x_odd3[index]
 
     return x
+
+
+def ifft(signal, decimal_places=28):
+    """The client function that returns the inverse
+    fast fourier transform of a freq-domain signal. The 
+    function only rounds off the elements of the transformed 
+    signal, and the transformation itself is handled by 
+    ifft_helper().
+
+    Args:
+        signal (list): The list (hpc, complex, or str) that
+        represents the freq-domain elements of the signal to 
+        be transformed.
+        decimal_places (int, optional): The number of decimal places
+        desired. Defaults to 28.
+
+    Returns:
+        list: A list of rounded off hpc objects that represents 
+        the time-domain elements of the transformed signal.
+    """
+    return [hpc_round(item, decimal_places=decimal_places) for item in ifft_helper(signal)]
 
 
 def main():
@@ -559,7 +588,8 @@ def main():
 
         signal = [hpc(item) for item in signal_regex.findall(signal)]
 
-        time_signal = [int(hpc_round(item, decimal_places= 1, return_real_only= True)) for item in ifft(signal)]
+        # floor into integers the rounded off elements of the transformed signal
+        time_signal = [int(item.re()) for item in ifft(signal, decimal_places=1)]
         ans = [time_signal_length]
 
         for index in range(int(time_signal_length)):
@@ -587,16 +617,14 @@ if __name__ == '__main__':
 # test7 = [12, 35, 2, 35, 22, 16, 12, 74, 27, 34, 56, 12, 8, 12, 45, 7]
 # test8 = [(409+0j), (-83.554-3.449j), (62.033-5.949j), (-42.96+23.026j), (-46+31j), (42.66-128.009j), (-44.033-3.949j), (23.856-98.485j), (-41+0j), (23.856+98.485j), (-44.033+3.949j), (42.66+128.009j), (-46-31j), (-42.96-23.026j), (62.033+5.949j), (-83.554+3.449j)]
 
-# test9 = [1.234567, 7.654321, 1.001001, 0.000001]
+# test9 = [1.123456700001, 7.654321000001, 1.001001000001, 0.000000000001]
 # test10 = [(9.889888+0j), (0.23356700000000008-7.654321j), (-5.418754000000001+0j), (0.23356700000000008+7.654321j)]
 
 
-# print(ifft(fft(test1)))
-# print(ifft(fft(test3)))
-# print(ifft(fft(test5)))
-# print(ifft(fft(test7)))
-# print(ifft(fft(test9)))
+# print(ifft(fft(test1), decimal_places=6))
+# print(ifft(fft(test3), decimal_places=6))
+# print(ifft(fft(test5), decimal_places=6))
+# print(ifft(fft(test7), decimal_places=6))
+# print(ifft(fft(test9), decimal_places=12))
 
-# only reliable if ifft() doesn't floor the final answer or if time-domain signal is only composed of integers
-# a = (ifft(fft(ifft(fft(ifft(fft(test5)))))))
-# print([hpc_round(item) for item in a])
+# print(ifft(fft(ifft(fft(ifft(fft(test5))))), decimal_places=0))
