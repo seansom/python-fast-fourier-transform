@@ -228,7 +228,7 @@ class hpc:
         return hpc.__pow__(other, self)
 
 
-def hpcround(x, decimal_places= 18, return_real_only= False):
+def hpc_round(x, decimal_places= 18, return_real_only= False):
     """Function that rounds off hpc objects and converts it into a 
     complex object or float object is return_real_only is set to True.
 
@@ -311,7 +311,7 @@ def flatten_list(li):
 
 
 @memoize
-def is_power_of2(N):
+def is_power_of_2(N):
     """Checks if an input N is a power of 2.
 
     Args:
@@ -411,7 +411,7 @@ def fft(signal):
 
     signal_copy = signal.copy()
 
-    while not is_power_of2(len(signal_copy)):
+    while not is_power_of_2(len(signal_copy)):
         signal_copy.append(0)
 
     N = len(signal_copy)
@@ -467,7 +467,7 @@ def ifft(signal):
 
     signal_copy = signal.copy()
 
-    while not is_power_of2(len(signal_copy)):
+    while not is_power_of_2(len(signal_copy)):
         signal_copy.append(0)
 
     N = len(signal_copy)
@@ -559,7 +559,7 @@ def main():
 
         signal = [hpc(item) for item in signal_regex.findall(signal)]
 
-        time_signal = [int(hpcround(item, decimal_places= 1, return_real_only= True)) for item in ifft(signal)]
+        time_signal = [int(hpc_round(item, decimal_places= 1, return_real_only= True)) for item in ifft(signal)]
         ans = [time_signal_length]
 
         for i in range(int(time_signal_length)):
@@ -599,4 +599,4 @@ if __name__ == '__main__':
 
 # only reliable if ifft() doesn't floor the final answer or if time-domain signal is only composed of integers
 # a = (ifft(fft(ifft(fft(ifft(fft(test5)))))))
-# print([hpcround(item) for item in a])
+# print([hpc_round(item) for item in a])
