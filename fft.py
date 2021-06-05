@@ -4,7 +4,18 @@ import sys, math, re, decimal
 class hpc:
     """A high precision complex class utilizing the
     standard library Decimal class.
-    """    
+
+    Args:
+        x (complex, str, or number): An hpc may be
+        initialized by a single complex or str object,
+        or a single or pair of number objects.
+        y (number, optional): The number representing
+        the imaginary part of the complex number. 
+        Defaults to None or 0 if x is of a number type.
+
+    >>> hpc('1.2 - 2.2j')
+    '1.2-2.2j'
+    """
 
     def __init__(self, x, y= None):
 
@@ -104,9 +115,9 @@ class hpc:
             return f'{self.imag}j'
 
         if self.imag < 0:
-            return f'{self.real} - {-self.imag}j'
+            return f'{self.real}-{-self.imag}j'
 
-        return f'{self.real} + {self.imag}j'
+        return f'{self.real}+{self.imag}j'
 
 
     def __add__(self, other):
@@ -239,6 +250,9 @@ def hpc_round(x, decimal_places=28):
 
     Returns:
         hpc: The rounded off hpc object.
+    
+    >>> hpc_round(hpc('1.234567-5.4321j'), decimal_places=3)
+    '1.235-5.432j'
     """
     rounding_factor = 10 ** decimal_places
 
@@ -457,10 +471,13 @@ def fft(signal, decimal_places=28):
         be transformed.
 
     Returns:
-        list: A list of rounded off hpc objects that represents 
+        list: A list of rounded off numbers as strings that represent
         the freq-domain elements of the transformed signal.
+
+    >>> print(fft(['1.23', '4.56', '7.89', '0']))
+    ['13.68', '-6.66-4.56j', '4.56', '-6.66+4.56j']
     """
-    return [hpc_round(item, decimal_places=decimal_places) for item in fft_helper(signal)]
+    return [str(hpc_round(item, decimal_places=decimal_places)) for item in fft_helper(signal)]
 
 
 def ifft_helper(signal):
@@ -553,10 +570,13 @@ def ifft(signal, decimal_places=28):
         desired. Defaults to 28.
 
     Returns:
-        list: A list of rounded off hpc objects that represents 
+        list: A list of rounded off numbers as strings that represent
         the time-domain elements of the transformed signal.
+
+    >>> print(ifft(['13.68', '-6.66-4.56j', '4.56', '-6.66+4.56j']))
+    ['1.23', '4.56', '7.89', '0']
     """
-    return [hpc_round(item, decimal_places=decimal_places) for item in ifft_helper(signal)]
+    return [str(hpc_round(item, decimal_places=decimal_places)) for item in ifft_helper(signal)]
 
 
 def main():
@@ -596,7 +616,7 @@ def main():
         signal = [hpc(item) for item in signal_regex.findall(signal)]
 
         # floor into integers the rounded off elements of the transformed signal
-        time_signal = [int(item.re()) for item in ifft(signal, decimal_places=1)]
+        time_signal = [int(hpc(item).re()) for item in ifft(signal, decimal_places=1)]
         ans = [time_signal_length]
 
         for index in range(int(time_signal_length)):
@@ -611,7 +631,7 @@ def main():
 if __name__ == '__main__':
     main()
 
-    # # example of high precision transform
+    # example of high precision transform
     # test = ['1.000000123456700000000001', '7.654321000000000000098765', '1.001001000000000000011234', '0.000000000000000000012345']
-    # print(ifft(fft(test), decimal_places=24))
+    # print(ifft(fft(test)))
 
