@@ -388,6 +388,8 @@ def w(n, k, N):
 def fft_helper(signal):
     """Helper function to fft() that solves for the 
     fast fourier transform of a freq-domain signal.
+    For high precision applications, input list should 
+    be composed of strings or hpc objects.
 
     Args:
         signal (list): The list (hpc, complex, or str) that
@@ -446,6 +448,8 @@ def fft(signal, decimal_places=28):
     transform of a freq-domain signal. The function only 
     rounds off the elements of the transformed signal, and 
     the transformation itself is handled by fft_helper().
+    For high precision applications, input list should be 
+    composed of strings or hpc objects.
 
     Args:
         signal (list): The list (hpc, complex, or str) that
@@ -461,7 +465,9 @@ def fft(signal, decimal_places=28):
 
 def ifft_helper(signal):
     """Helper function to ifft() that solves for the inverse
-    fast fourier transform of a freq-domain signal.
+    fast fourier transform of a freq-domain signal. For high 
+    precision applications, input list should be composed of 
+    strings or hpc objects.
 
     Args:
         signal (list): The list (hpc, complex, or str) that
@@ -536,7 +542,8 @@ def ifft(signal, decimal_places=28):
     fast fourier transform of a freq-domain signal. The 
     function only rounds off the elements of the transformed 
     signal, and the transformation itself is handled by 
-    ifft_helper().
+    ifft_helper(). For high precision applications, input
+    list should be composed of strings or hpc objects.
 
     Args:
         signal (list): The list (hpc, complex, or str) that
@@ -604,27 +611,7 @@ def main():
 if __name__ == '__main__':
     main()
 
+    # # example of high precision transform
+    # test = ['1.000000123456700000000001', '7.654321000000000000098765', '1.001001000000000000011234', '0.000000000000000000012345']
+    # print(ifft(fft(test), decimal_places=24))
 
-# test1 = [0, 2, 4, 6]
-# test2 = [(12+0j), (-4+4j), (-4+0j), (-4-4j)]
-
-# test3 = [0, 1, 2, 3, 4, 5, 6, 7]
-# test4 = [(28+0j), (-4+9.656854j), (-4+4j), (-4+1.656854j), (-4+0j), (-4-1.656854j), (-4-4j), (-4-9.656854j)]
-
-# test5 = [12, 5, 23, 6, 8, 17, 8, 2]
-# test6 = [(81+0j), (-7.313708-9.343145j), (-11-14j), (15.313708+20.656854j), (21+0j), (15.313708-20.656854j), (-11+14j), (-7.313708+9.343145j)]
-
-# test7 = [12, 35, 2, 35, 22, 16, 12, 74, 27, 34, 56, 12, 8, 12, 45, 7]
-# test8 = [(409+0j), (-83.554-3.449j), (62.033-5.949j), (-42.96+23.026j), (-46+31j), (42.66-128.009j), (-44.033-3.949j), (23.856-98.485j), (-41+0j), (23.856+98.485j), (-44.033+3.949j), (42.66+128.009j), (-46-31j), (-42.96-23.026j), (62.033+5.949j), (-83.554+3.449j)]
-
-# test9 = [1.123456700001, 7.654321000001, 1.001001000001, 0.000000000001]
-# test10 = [(9.889888+0j), (0.23356700000000008-7.654321j), (-5.418754000000001+0j), (0.23356700000000008+7.654321j)]
-
-
-# print(ifft(fft(test1), decimal_places=6))
-# print(ifft(fft(test3), decimal_places=6))
-# print(ifft(fft(test5), decimal_places=6))
-# print(ifft(fft(test7), decimal_places=6))
-# print(ifft(fft(test9), decimal_places=12))
-
-# print(ifft(fft(ifft(fft(ifft(fft(test5))))), decimal_places=0))
