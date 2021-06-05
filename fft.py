@@ -230,7 +230,7 @@ class hpc:
 
 def hpc_round(x, decimal_places= 18, return_real_only= False):
     """Function that rounds off hpc objects and converts it into a 
-    complex object or float object is return_real_only is set to True.
+    complex object or float object if return_real_only is set to True.
 
     Args:
         x (hpc): The hpc to be rounded off
