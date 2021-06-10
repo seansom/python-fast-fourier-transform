@@ -616,7 +616,7 @@ def main():
         signal = [hpc(item) for item in signal_regex.findall(signal)]
 
         # floor into integers the rounded off elements of the transformed signal
-        time_signal = [int(hpc(item).re()) for item in ifft(signal, decimal_places=1)]
+        time_signal = [int(hpc(item).re()) for item in ifft(signal, decimal_places=6)]
         ans = [time_signal_length]
 
         for index in range(int(time_signal_length)):
